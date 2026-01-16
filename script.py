@@ -6,11 +6,16 @@ from pathlib import Path
 
 # ARGUMENTS
 
-if len(sys.argv) != 2:
-    print("Usage: python script.py <path_to_project>")
+if len(sys.argv) < 2:
+    print("Usage: python script.py <path_to_project> [--exclude <pattern>]")
     sys.exit(1)
 
 PROJECT = sys.argv[1]
+
+exclude_pattern = None
+if len(sys.argv) == 4 and sys.argv[2] in ("-e", "--exclude"):
+    exclude_pattern = sys.argv[3]
+
 PROJECT_NAME = PROJECT.replace("/", "_").replace("\\", "_")
 
 OUT_DIR = Path("radon_runs")
@@ -18,6 +23,8 @@ OUT_DIR.mkdir(exist_ok=True)
 
 
 def run(cmd):
+    if exclude_pattern:
+        cmd += ["-e", exclude_pattern]
     return subprocess.check_output(cmd, text=True)
 
 
@@ -52,7 +59,6 @@ percentage_comments = int(
 )
 
 # CC
-
 
 cc = run(["radon", "cc", PROJECT, "-s", "-a"])
 run_dir.joinpath("cc.txt").write_text(cc)
@@ -92,6 +98,7 @@ mean_per_file_mi = sum(mi_values) / len(mi_values)
 summary = {
     "run": run_id,
     "project_path": PROJECT,
+    "exclude": exclude_pattern,
     "raw": {
         "loc": loc,
         "number_of_comments": number_of_comments,
