@@ -122,6 +122,8 @@ run_dir.joinpath("summary.json").write_text(
 # STDOUT
 
 print(f"Run: {run_id}")
+print(f"Project path: {PROJECT}")
+if (exclude_pattern): print(f"Exclude: {exclude_pattern}")
 print(f"LOC: {loc}")
 print(f"Number of comments: {number_of_comments}")
 print(f"Percentage of comments: {percentage_comments}%")
